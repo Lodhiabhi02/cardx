@@ -1,15 +1,20 @@
 import 'package:appwrite/models.dart';
 import 'package:cardx/apis/auth_api.dart';
+import 'package:cardx/apis/user_api.dart';
 import 'package:cardx/core/core.dart';
 import 'package:cardx/features/auth/pages/login_page.dart';
 import 'package:cardx/features/home/view/home_page.dart';
+import 'package:cardx/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //providers
 final authControllerProvider =
     StateNotifierProvider<AuthController, bool>((ref) {
-      return AuthController(authApi: ref.watch(authAPIProvider));
+      return AuthController(
+        authApi: ref.watch(authAPIProvider),
+        userApi: ref.watch(userAPIProvider),
+      );
     });
 
 final currentUserAccountProvider = FutureProvider((ref) {
@@ -19,8 +24,10 @@ final currentUserAccountProvider = FutureProvider((ref) {
 
 class AuthController extends StateNotifier<bool> {
   final AuthApi _authApi;
-  AuthController({required AuthApi authApi})
+  final UserApi _userApi;
+  AuthController({required AuthApi authApi, required UserApi userApi})
     : _authApi = authApi,
+      _userApi = userApi,
       super(false);
 
   //signup
@@ -39,9 +46,21 @@ class AuthController extends StateNotifier<bool> {
 
     state = false;
 
-    res.fold((l) => showSnackBar(context, l.message), (r) {
-      showSnackBar(context, "Account created! Please Log in");
-      Navigator.push(context, LoginPage.route());
+    res.fold((l) => showSnackBar(context, l.message), (r) async {
+      UserModel userModel = UserModel(
+        uid: '',
+        name: name,
+        email: email,
+        profilePic: '',
+        savedCards: const [],
+        favCards: const [],
+      );
+      final res2 = await _userApi.saveUserData(userModel);
+
+      res2.fold((l) => showSnackBar(context, l.message), (r) {
+        showSnackBar(context, "Account created! Please Log in");
+        Navigator.push(context, LoginPage.route());
+      });
     });
   }
 

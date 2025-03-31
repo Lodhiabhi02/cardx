@@ -1,4 +1,5 @@
 import 'package:cardx/constants/assets_constants.dart';
+import 'package:cardx/features/home/card_list.dart';
 import 'package:cardx/theme/app_palette.dart';
 
 import 'package:flutter/material.dart';
@@ -35,4 +36,10 @@ class UiConstants {
       centerTitle: true,
     );
   }
+
+  static List<Widget> bottomBarPages = [
+    CardList(),
+    // ExploreView(),
+    // NotificationView(),
+  ];
 }
