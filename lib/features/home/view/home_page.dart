@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:cardx/constants/assets_constants.dart';
 import 'package:cardx/constants/ui_constants.dart';
+import 'package:cardx/core/core.dart';
+import 'package:cardx/features/card/view/scan_card_page.dart';
 import 'package:cardx/features/home/widgets/bottom_nav_clipper.dart';
 import 'package:cardx/features/home/widgets/buttom_nav_bar_item.dart';
 import 'package:cardx/theme/app_palette.dart';
@@ -17,6 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final appbar = UiConstants.appBar();
+  File? image;
 
   int _page = 0;
 
@@ -24,6 +29,15 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _page = index;
     });
+  }
+
+  Future<File?> onPickImage() async {
+    File? pickedImage =
+        await pickimage(); // Ensure pickimage() returns a File
+    setState(() {
+      image = pickedImage;
+    });
+    return pickedImage;
   }
 
   @override
@@ -107,7 +121,14 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () async {
+          File? pickedFile = await onPickImage();
+          if (image != null && mounted) {
+            Navigator.of(
+              context,
+            ).push(ScanCardPage.route(pickedFile!));
+          }
+        },
         shape: CircleBorder(),
         backgroundColor: Colors.blueAccent,
         child: Icon(

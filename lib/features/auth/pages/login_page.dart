@@ -47,62 +47,65 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       body:
           isLoading
               ? const Loader()
-              : Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Log In",
-                        style: Theme.of(
-                          context,
-                        ).textTheme.titleLarge!.copyWith(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
+              : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(height: 100),
+                        Text(
+                          "Log In",
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleLarge!.copyWith(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
 
-                      SizedBox(height: 20),
-                      AuthField(
-                        text: "Email",
-                        controller: emailController,
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      SizedBox(height: 20),
-                      AuthField(
-                        text: "Password",
-                        controller: passwordController,
-                        isPass: true,
-                      ),
-                      SizedBox(height: 30),
-                      AuthButton(
-                        buttonText: "Log In",
-                        onTap: onLogIn,
-                      ),
-                      SizedBox(height: 50),
-                      RichText(
-                        text: TextSpan(
-                          text: "Don't have an account? ",
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(fontSize: 18),
-                          children: [
-                            TextSpan(
-                              recognizer:
-                                  TapGestureRecognizer()
-                                    ..onTap = () {},
-                              text: "Sign Up",
-                              style: TextStyle(
-                                color: AppPalette.primaryBlue,
-                              ),
-                            ),
-                          ],
+                        SizedBox(height: 20),
+                        AuthField(
+                          text: "Email",
+                          controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
                         ),
-                      ),
-                    ],
+                        SizedBox(height: 20),
+                        AuthField(
+                          text: "Password",
+                          controller: passwordController,
+                          isPass: true,
+                        ),
+                        SizedBox(height: 30),
+                        AuthButton(
+                          buttonText: "Log In",
+                          onTap: onLogIn,
+                        ),
+                        SizedBox(height: 50),
+                        RichText(
+                          text: TextSpan(
+                            text: "Don't have an account? ",
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(fontSize: 18),
+                            children: [
+                              TextSpan(
+                                recognizer:
+                                    TapGestureRecognizer()
+                                      ..onTap = () {},
+                                text: "Sign Up",
+                                style: TextStyle(
+                                  color: AppPalette.primaryBlue,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

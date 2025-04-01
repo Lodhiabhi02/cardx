@@ -16,7 +16,18 @@ class AppPalette {
   );
   static const Color iconGray = Color.fromARGB(255, 120, 120, 120);
   static const Color transparent = Color.fromARGB(0, 120, 120, 120);
-  static const Color boderColor = Color.fromARGB(255, 84, 101, 255);
+  static const Color boderColorBlue = Color.fromARGB(
+    255,
+    84,
+    101,
+    255,
+  );
+  static const Color boderColorGray = Color.fromARGB(
+    255,
+    120,
+    120,
+    120,
+  );
   static const Color boderErrorColor = Color.fromARGB(
     255,
     255,

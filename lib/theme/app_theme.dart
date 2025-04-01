@@ -1,6 +1,5 @@
 import 'package:cardx/theme/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static ThemeData lightTheme = ThemeData.light().copyWith(
@@ -19,6 +18,12 @@ class AppTheme {
       backgroundColor: AppPalette.background,
       // elevation: 0, // controls the shadow
       iconTheme: IconThemeData(color: AppPalette.white),
+      titleTextStyle: TextStyle(
+        color: AppPalette.textWhite,
+        fontSize: 23,
+        fontWeight: FontWeight.bold,
+      ),
+      centerTitle: true,
     ),
     inputDecorationTheme: InputDecorationTheme().copyWith(
       hintStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
@@ -34,7 +39,7 @@ class AppTheme {
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: AppPalette.boderColor),
+        borderSide: BorderSide(color: AppPalette.boderColorBlue),
       ),
     ),
     // textTheme: GoogleFonts.latoTextTheme().copyWith(

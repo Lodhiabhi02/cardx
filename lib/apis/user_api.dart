@@ -1,4 +1,5 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart' as model;
 import 'package:cardx/constants/appwrite_constants.dart';
 import 'package:cardx/core/core.dart';
 import 'package:cardx/models/user_model.dart';
@@ -12,6 +13,7 @@ final userAPIProvider = Provider((ref) {
 
 abstract class IUserApi {
   FutureEitherVoid saveUserData(UserModel usermodel);
+  Future<model.Document> getUserData(String uid);
 }
 
 class UserApi implements IUserApi {
@@ -23,7 +25,7 @@ class UserApi implements IUserApi {
       await _db.createDocument(
         databaseId: AppwriteConstants.databaseId,
         collectionId: AppwriteConstants.usersCollectionId,
-        documentId: ID.unique(),
+        documentId: usermodel.uid,
         data: usermodel.toMap(),
       );
 
@@ -35,5 +37,14 @@ class UserApi implements IUserApi {
     } catch (e, stackTrace) {
       return left(Failure(e.toString(), stackTrace));
     }
+  }
+
+  @override
+  Future<model.Document> getUserData(String uid) async {
+    return await _db.getDocument(
+      databaseId: AppwriteConstants.databaseId,
+      collectionId: AppwriteConstants.usersCollectionId,
+      documentId: uid,
+    );
   }
 }

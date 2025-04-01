@@ -1,5 +1,5 @@
 import 'package:cardx/constants/assets_constants.dart';
-import 'package:cardx/features/home/card_list.dart';
+import 'package:cardx/features/card/widgets/card_list.dart';
 import 'package:cardx/theme/app_palette.dart';
 
 import 'package:flutter/material.dart';
@@ -39,7 +39,8 @@ class UiConstants {
 
   static List<Widget> bottomBarPages = [
     CardList(),
-    // ExploreView(),
-    // NotificationView(),
+    Text("fav screen"),
+    Text("Ar view"),
+    Text("Profile"),
   ];
 }
