@@ -14,6 +14,8 @@ final userAPIProvider = Provider((ref) {
 abstract class IUserApi {
   FutureEitherVoid saveUserData(UserModel usermodel);
   Future<model.Document> getUserData(String uid);
+  FutureEitherVoid updateUserData(UserModel userModel);
+  FutureEitherVoid addCardToUserData(UserModel userModel);
 }
 
 class UserApi implements IUserApi {
@@ -46,5 +48,38 @@ class UserApi implements IUserApi {
       collectionId: AppwriteConstants.usersCollectionId,
       documentId: uid,
     );
+  }
+
+  // this is for updating the profile pic
+  @override
+  FutureEitherVoid updateUserData(UserModel userModel) async {
+    try {
+      await _db.updateDocument(
+        databaseId: AppwriteConstants.databaseId,
+        collectionId: AppwriteConstants.usersCollectionId,
+        documentId: userModel.uid,
+        data: userModel.toMap(),
+      );
+      return right(null);
+    } on AppwriteException catch (e, stackTrace) {
+      return left(Failure(e.message ?? "Unknown", stackTrace));
+    } catch (e, stackTrace) {
+      return left(Failure(e.toString(), stackTrace));
+    }
+  }
+
+  @override
+  FutureEitherVoid addCardToUserData(UserModel userModel) async {
+    try {
+      await _db.updateDocument(
+        databaseId: AppwriteConstants.databaseId,
+        collectionId: AppwriteConstants.usersCollectionId,
+        documentId: userModel.uid,
+        data: {"savedCards": userModel.savedCards},
+      );
+      return right(null);
+    } on AppwriteException catch (e, stackTrace) {
+      return left(Failure(e.message ?? "Unknown", stackTrace));
+    }
   }
 }

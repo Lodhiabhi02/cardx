@@ -44,6 +44,8 @@ dependencies:
   google_mlkit_text_recognition: ^0.15.0
   dotted_border: ^2.1.0
   http: ^1.3.0
+  intl: ^0.20.2
+  like_button: ^2.0.5
 dependency_overrides:
   flutter_web_auth_2: 4.1.0
 

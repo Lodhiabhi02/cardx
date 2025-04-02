@@ -11,4 +11,7 @@ class AssetsConstants {
   static const scanIcon = "$_svgsPath/scan.svg";
   static const arviewFilled = "$_svgsPath/ar_view_filled.svg";
   static const arviewOutline = "$_svgsPath/ar_view_outline.svg";
+  static const jobPositionIcon = "$_svgsPath/job_position_icon.svg";
+  static const companyIcon = "$_svgsPath/company_icon.svg";
+  static const clockIcon = "$_svgsPath/clock_icon.svg";
 }

@@ -34,4 +34,5 @@ class AppPalette {
     33,
     100,
   );
+  static const Color likeColor = Color.fromARGB(255, 255, 53, 53);
 }
