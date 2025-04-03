@@ -23,6 +23,7 @@ abstract class ICardApi {
   Future<List<Document>> getLikedCards(String uid);
   // Stream<List<CardModel>> getLikedCardsStream(String userId);
   FutureEither<void> deleteCard(String cardId);
+  Future<List<Document>> seacrhCardByNameCompnay(String name);
 }
 
 class CardApi implements ICardApi {
@@ -189,6 +190,20 @@ class CardApi implements ICardApi {
       return left(Failure(e.message ?? "Unknown", stackTrace));
     } catch (e, stackTrace) {
       return left(Failure(e.toString(), stackTrace));
+    }
+  }
+
+  @override
+  Future<List<Document>> seacrhCardByNameCompnay(String name) async {
+    try {
+      final document = await _db.listDocuments(
+        databaseId: AppwriteConstants.databaseId,
+        collectionId: AppwriteConstants.cardsCollectionId,
+        queries: [Query.search("name", name)],
+      );
+      return document.documents;
+    } on AppwriteException catch (e) {
+      throw Exception(e.message);
     }
   }
 }

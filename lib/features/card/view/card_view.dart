@@ -80,27 +80,68 @@ class CardView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _contactButton(Icons.phone, () async {
+                  print('Phone button pressed');
+                  final String sanitizedPhone = cardModel.phone
+                      .replaceAll(
+                        RegExp(r'[^\d+]'),
+                        '',
+                      ); // Remove non-numeric characters except '+'
                   final Uri phoneUri = Uri(
                     scheme: 'tel',
-                    path: cardModel.phone,
+                    path: sanitizedPhone,
                   );
                   if (await canLaunchUrl(phoneUri)) {
                     await launchUrl(phoneUri);
+                  } else {
+                    print('Could not launch phone URL: $phoneUri');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Unable to make a call. Please check your device settings.',
+                        ),
+                      ),
+                    );
                   }
                 }),
                 _contactButton(Icons.email, () async {
+                  print('Email button pressed');
                   final Uri emailUri = Uri(
                     scheme: 'mailto',
                     path: cardModel.email,
+                    query:
+                        'subject=Hello&body=Hi', // Optional: Add subject and body
                   );
                   if (await canLaunchUrl(emailUri)) {
                     await launchUrl(emailUri);
+                  } else {
+                    print('Could not launch email URL: $emailUri');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Unable to send email. Please check your email app.',
+                        ),
+                      ),
+                    );
                   }
                 }),
                 _contactButton(Icons.web, () async {
-                  final Uri webUri = Uri.parse(cardModel.website);
+                  print('Website button pressed');
+                  final String sanitizedWebsite =
+                      cardModel.website.startsWith('http')
+                          ? cardModel.website
+                          : 'https://${cardModel.website}'; // Ensure URL starts with http/https
+                  final Uri webUri = Uri.parse(sanitizedWebsite);
                   if (await canLaunchUrl(webUri)) {
                     await launchUrl(webUri);
+                  } else {
+                    print('Could not launch website URL: $webUri');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Unable to open website. Please check the URL.',
+                        ),
+                      ),
+                    );
                   }
                 }),
               ],

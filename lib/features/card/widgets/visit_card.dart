@@ -51,11 +51,14 @@ class VisitCard extends ConsumerWidget {
             .deleteCard(cardId: card.id, context: context);
       },
       child: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 4,
+        ),
         child: Container(
           padding: const EdgeInsets.all(
             6,
-          ).copyWith(left: 10, top: 3, right: 10),
+          ).copyWith(left: 10, top: 0, right: 10),
           decoration: BoxDecoration(
             color: AppPalette.cardBackground,
             borderRadius: BorderRadius.circular(15),

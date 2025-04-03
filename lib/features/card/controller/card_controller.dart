@@ -42,6 +42,14 @@ final getLatestCardProvider = StreamProvider((ref) {
   return cardApi.getLatestCard();
 });
 
+final searchCardsByNameProvider = FutureProvider.family((
+  ref,
+  String name,
+) async {
+  final cardController = ref.watch(cardControllerProvider.notifier);
+  return cardController.searchCardsByname(name);
+});
+
 // final getLatestLikedCardProvider = StreamProvider.family((
 //   ref,
 //   String uid,
@@ -153,6 +161,11 @@ class CardController extends StateNotifier<bool> {
 
   Future<List<CardModel>> getUserLikedCards(String uid) async {
     final cards = await _cardApi.getLikedCards(uid);
+    return cards.map((e) => CardModel.fromMap(e.data)).toList();
+  }
+
+  Future<List<CardModel>> searchCardsByname(String name) async {
+    final cards = await _cardApi.seacrhCardByNameCompnay(name);
     return cards.map((e) => CardModel.fromMap(e.data)).toList();
   }
 

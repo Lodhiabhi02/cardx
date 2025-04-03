@@ -1,6 +1,7 @@
 import 'package:cardx/constants/assets_constants.dart';
 import 'package:cardx/features/card/widgets/card_list.dart';
 import 'package:cardx/features/card/widgets/fav_card_list.dart';
+import 'package:cardx/features/user_profile/view/user_profile_view.dart';
 import 'package:cardx/theme/app_palette.dart';
 
 import 'package:flutter/material.dart';
@@ -42,6 +43,6 @@ class UiConstants {
     CardList(),
     FavCardList(),
     Text("Ar view"),
-    Text("Profile"),
+    UserProfileView(),
   ];
 }
