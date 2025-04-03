@@ -4,6 +4,7 @@ import 'package:cardx/apis/storage_api.dart';
 import 'package:cardx/apis/user_api.dart';
 import 'package:cardx/core/core.dart';
 import 'package:cardx/features/auth/controller/auth_controller.dart';
+import 'package:cardx/features/home/view/home_page.dart';
 
 import 'package:cardx/models/card_model.dart';
 import 'package:cardx/models/user_model.dart';
@@ -41,19 +42,19 @@ final getLatestCardProvider = StreamProvider((ref) {
   return cardApi.getLatestCard();
 });
 
-final getLatestLikedCardProvider = StreamProvider.family((
-  ref,
-  String uid,
-) {
-  final cardApi = ref.watch(cardAPIProvider);
-  return cardApi.getLatestLikedCard(uid);
-});
+// final getLatestLikedCardProvider = StreamProvider.family((
+//   ref,
+//   String uid,
+// ) {
+//   final cardApi = ref.watch(cardAPIProvider);
+//   return cardApi.getLatestLikedCard(uid);
+// });
 
-final userLikedCardsStreamProvider =
-    StreamProvider.family<List<CardModel>, String>((ref, userId) {
-      final cardApi = ref.watch(cardAPIProvider);
-      return cardApi.getLikedCardsStream(userId);
-    });
+// final userLikedCardsStreamProvider =
+//     StreamProvider.family<List<CardModel>, String>((ref, userId) {
+//       final cardApi = ref.watch(cardAPIProvider);
+//       return cardApi.getLikedCardsStream(userId);
+//     });
 
 class CardController extends StateNotifier<bool> {
   final CardApi _cardApi;
@@ -84,15 +85,19 @@ class CardController extends StateNotifier<bool> {
     required notes,
     required BuildContext context,
   }) async {
+    if (state) return; // Prevent duplicate submissions
     state = true;
+
+    // Validate image
+    if (image == null || !image.existsSync()) {
+      showSnackBar(context, "Please select a valid image.");
+      state = false; // Reset state if validation fails
+      return;
+    }
 
     // current user
     final user = _ref.watch(currentUserDeatilsProvider).value!;
 
-    if (image == null || !image.existsSync()) {
-      showSnackBar(context, "Please select an image.");
-      return;
-    }
     final avatarUrl = await _storageApi.uploadImage(image);
 
     CardModel card = CardModel(
@@ -113,21 +118,32 @@ class CardController extends StateNotifier<bool> {
 
     final res = await _cardApi.saveCard(card);
 
-    res.fold((l) => showSnackBar(context, l.message), (r) async {
-      final cardId = r.$id;
+    res.fold(
+      (l) {
+        showSnackBar(context, l.message);
+        state = false; // Reset state on failure
+      },
+      (r) async {
+        final cardId = r.$id;
 
-      List<String> updatedSavedCards = List.from(user.savedCards)
-        ..add(cardId);
-      UserModel updatedUser = user.copyWith(
-        savedCards: updatedSavedCards,
-      );
+        List<String> updatedSavedCards = List.from(user.savedCards)
+          ..add(cardId);
+        UserModel updatedUser = user.copyWith(
+          savedCards: updatedSavedCards,
+        );
 
-      final res2 = await _userApi.addCardToUserData(updatedUser);
-      state = false;
-      res2.fold((l) => showSnackBar(context, l.message), (r) {
-        showSnackBar(context, "Card saved Successfully!");
-      });
-    });
+        final res2 = await _userApi.addCardToUserData(updatedUser);
+        state = false; // Reset state after success
+        res2.fold((l) => showSnackBar(context, l.message), (r) {
+          showSnackBar(context, "Card saved Successfully!");
+          Navigator.pushAndRemoveUntil(
+            context,
+            HomePage.route(),
+            (route) => false,
+          );
+        });
+      },
+    );
   }
 
   Future<List<CardModel>> getUserSavedCards(String uid) async {
@@ -148,5 +164,19 @@ class CardController extends StateNotifier<bool> {
     res.fold((l) => l.message, (r) {
       debugPrint("Card liked: ${updatedCard.isFavorite}");
     });
+  }
+
+  void deleteCard({
+    required String cardId,
+    required BuildContext context,
+  }) async {
+    state = true;
+    final res = await _cardApi.deleteCard(cardId);
+    state = false;
+
+    res.fold(
+      (l) => showSnackBar(context, l.message),
+      (r) => showSnackBar(context, "Card deleted successfully!"),
+    );
   }
 }

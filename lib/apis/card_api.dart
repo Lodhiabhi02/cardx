@@ -21,7 +21,8 @@ abstract class ICardApi {
   Stream<RealtimeMessage> getLatestLikedCard(String uid);
   FutureEither<Document> likeCard(CardModel cardModel);
   Future<List<Document>> getLikedCards(String uid);
-  Stream<List<CardModel>> getLikedCardsStream(String userId);
+  // Stream<List<CardModel>> getLikedCardsStream(String userId);
+  FutureEither<void> deleteCard(String cardId);
 }
 
 class CardApi implements ICardApi {
@@ -122,56 +123,72 @@ class CardApi implements ICardApi {
     }
   }
 
+  // @override
+  // Stream<List<CardModel>> getLikedCardsStream(String userId) async* {
+  //   final channel =
+  //       'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.cardsCollectionId}.documents';
+
+  //   final controller = StreamController<List<CardModel>>();
+  //   final List<CardModel> accumulatedCards = [];
+
+  //   // Fetch the initial list of liked cards
+  //   try {
+  //     final initialDocuments = await getLikedCards(userId);
+  //     accumulatedCards.addAll(
+  //       initialDocuments.map((doc) => CardModel.fromMap(doc.data)),
+  //     );
+  //     controller.add(
+  //       List.from(accumulatedCards),
+  //     ); // Emit the initial list
+  //   } catch (e) {
+  //     controller.addError(
+  //       e,
+  //     ); // Handle errors during the initial fetch
+  //   }
+
+  //   // Listen to real-time updates
+  //   _realtime.subscribe([channel]).stream.listen((message) {
+  //     if (message.payload is Map<String, dynamic>) {
+  //       final data = message.payload as Map<String, dynamic>;
+  //       final card = CardModel.fromMap(data);
+
+  //       if (data['isFavorite'] == true && data['uid'] == userId) {
+  //         // Add or update the card in the list
+  //         final index = accumulatedCards.indexWhere(
+  //           (c) => c.id == card.id,
+  //         );
+  //         if (index != -1) {
+  //           accumulatedCards[index] = card; // Update existing card
+  //         } else {
+  //           accumulatedCards.add(card); // Add new card
+  //         }
+  //       } else if (data['isFavorite'] == false &&
+  //           data['uid'] == userId) {
+  //         // Remove the card from the list if it is disliked
+  //         accumulatedCards.removeWhere((c) => c.id == card.id);
+  //       }
+
+  //       // Emit the updated list
+  //       controller.add(List.from(accumulatedCards));
+  //     }
+  //   });
+
+  //   yield* controller.stream;
+  // }
+
   @override
-  Stream<List<CardModel>> getLikedCardsStream(String userId) async* {
-    final channel =
-        'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.cardsCollectionId}.documents';
-
-    final controller = StreamController<List<CardModel>>();
-    final List<CardModel> accumulatedCards = [];
-
-    // Fetch the initial list of liked cards
+  FutureEither<void> deleteCard(String cardId) async {
     try {
-      final initialDocuments = await getLikedCards(userId);
-      accumulatedCards.addAll(
-        initialDocuments.map((doc) => CardModel.fromMap(doc.data)),
+      await _db.deleteDocument(
+        databaseId: AppwriteConstants.databaseId,
+        collectionId: AppwriteConstants.cardsCollectionId,
+        documentId: cardId,
       );
-      controller.add(
-        List.from(accumulatedCards),
-      ); // Emit the initial list
-    } catch (e) {
-      controller.addError(
-        e,
-      ); // Handle errors during the initial fetch
+      return right(null);
+    } on AppwriteException catch (e, stackTrace) {
+      return left(Failure(e.message ?? "Unknown", stackTrace));
+    } catch (e, stackTrace) {
+      return left(Failure(e.toString(), stackTrace));
     }
-
-    // Listen to real-time updates
-    _realtime.subscribe([channel]).stream.listen((message) {
-      if (message.payload is Map<String, dynamic>) {
-        final data = message.payload as Map<String, dynamic>;
-        final card = CardModel.fromMap(data);
-
-        if (data['isFavorite'] == true && data['uid'] == userId) {
-          // Add or update the card in the list
-          final index = accumulatedCards.indexWhere(
-            (c) => c.id == card.id,
-          );
-          if (index != -1) {
-            accumulatedCards[index] = card; // Update existing card
-          } else {
-            accumulatedCards.add(card); // Add new card
-          }
-        } else if (data['isFavorite'] == false &&
-            data['uid'] == userId) {
-          // Remove the card from the list if it is disliked
-          accumulatedCards.removeWhere((c) => c.id == card.id);
-        }
-
-        // Emit the updated list
-        controller.add(List.from(accumulatedCards));
-      }
-    });
-
-    yield* controller.stream;
   }
 }

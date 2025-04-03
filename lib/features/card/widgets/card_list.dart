@@ -29,26 +29,35 @@ class CardList extends ConsumerWidget {
                       if (data.events.contains(
                         "databases.*.collections.${AppwriteConstants.cardsCollectionId}.documents.*.create",
                       )) {
-                        cards.insert(
-                          0,
-                          CardModel.fromMap(data.payload),
+                        final newCard = CardModel.fromMap(
+                          data.payload,
                         );
+                        // Prevent duplicate insertion
+                        if (!cards.any(
+                          (card) => card.id == newCard.id,
+                        )) {
+                          cards.insert(0, newCard);
+                        }
                       } else if (data.events.contains(
                         "databases.*.collections.${AppwriteConstants.cardsCollectionId}.documents.*.update",
                       )) {
-                        final card = CardModel.fromMap(data.payload);
+                        final updatedCard = CardModel.fromMap(
+                          data.payload,
+                        );
                         final index = cards.indexWhere(
-                          (element) => element.id == card.id,
+                          (element) => element.id == updatedCard.id,
                         );
                         if (index != -1) {
-                          cards[index] = card;
+                          cards[index] = updatedCard;
                         }
                       } else if (data.events.contains(
                         "databases.*.collections.${AppwriteConstants.cardsCollectionId}.documents.*.delete",
                       )) {
-                        final card = CardModel.fromMap(data.payload);
+                        final deletedCard = CardModel.fromMap(
+                          data.payload,
+                        );
                         cards.removeWhere(
-                          (element) => element.id == card.id,
+                          (element) => element.id == deletedCard.id,
                         );
                       }
                       return ListView.builder(

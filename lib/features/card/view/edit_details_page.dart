@@ -44,10 +44,17 @@ class _EditDetailsPageState extends ConsumerState<EditDetailsPage> {
   }
 
   void saveCard() {
+    if (image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please select an image.")),
+      );
+      return;
+    }
+
     ref
         .watch(cardControllerProvider.notifier)
         .saveCard(
-          image: image!,
+          image: image,
           name: _nameController.text.trim(),
           jobtitle: _jobTitleController.text.trim(),
           company: _companyController.text.trim(),
@@ -59,7 +66,6 @@ class _EditDetailsPageState extends ConsumerState<EditDetailsPage> {
           notes: _notesController.text.trim(),
           context: context,
         );
-    Navigator.pop(context);
   }
 
   @override
@@ -167,8 +173,8 @@ class _EditDetailsPageState extends ConsumerState<EditDetailsPage> {
 
                       SizedBox(height: 30),
                       RoundedButton(
-                        onTap: saveCard,
-                        buttonText: "save",
+                        onTap: isLoading ? () {} : saveCard,
+                        buttonText: isLoading ? "Saving..." : "Save",
                       ),
                     ],
                   ),
